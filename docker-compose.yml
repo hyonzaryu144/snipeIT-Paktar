@@ -1,0 +1,53 @@
+version: '3.3'
+
+services:
+
+  snipe-it:
+    image: lscr.io/linuxserver/snipe-it:latest
+    container_name: snipe-it
+    environment:
+      - APP_URL=http://inventario.paktar.com.ar:8237
+      - MYSQL_PORT_3306_TCP_ADDR=mariadb
+      - MYSQL_PORT_3306_TCP_PORT=3306
+      - MYSQL_DATABASE=snipeit
+      - MYSQL_USER=snipeit
+      - MYSQL_PASSWORD=Te12onf81
+      - MYSQL_ROOT_PASSWORD=%Server20
+              # Email Parameters #
+      # - the hostname/IP address of your mailserver
+      - MAIL_PORT_587_TCP_ADDR=smtp.office365.com
+      #the port for the mailserver (probably 587, could be another)
+      - MAIL_PORT_587_TCP_PORT=587
+      # the default from address, and from name for emails
+      - MAIL_ENV_FROM_ADDR=workflow@paktar.com.ar
+      - MAIL_ENV_FROM_NAME=ControldeInventario
+      # - pick 'tls' for SMTP-over-SSL, 'tcp' for unencrypted
+      - MAIL_ENV_ENCRYPTION=tls
+      # SMTP username and password
+      - MAIL_ENV_USERNAME=workflow@paktar.com.ar
+      - MAIL_ENV_PASSWORD=_abr2023
+    volumes:
+      - ./snipe_data:/config
+    ports:
+      - "8237:80"
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:10.6
+    container_name: mariadb
+    hostname: mariadb
+    environment:
+      - MYSQL_DATABASE=snipeit
+      - MYSQL_USER=snipeit
+      - MYSQL_PASSWORD=Te12onf81
+      - MYSQL_ROOT_PASSWORD=%Server20
+      - TZ="America/Argentina/Buenos_Aires"
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./snipe_db:/var/lib/mysql
+    expose:
+      - "3306"
+    restart: unless-stopped
